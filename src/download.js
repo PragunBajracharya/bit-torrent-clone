@@ -11,6 +11,7 @@ import {
 } from "./message.js";
 
 import Pieces from "./Pieces.js";
+import Queue from "./Queue.js";
 
 export const torrent = (torrent) => {
 	getPeers(torrent, (peers) => {
@@ -25,7 +26,7 @@ function download(peer, torrent, pieces) {
 	socket.connect(peer.port, peer.ip, () => {
 		socket.write(buildHandshake(torrent));
 	});
-	const queue = {chocked: true, queue: []};
+	const queue = new Queue(torrent);
 	onWholeMsg(socket, (msg) => msgHandler(socket, msg, pieces, queue));
 }
 
@@ -95,8 +96,8 @@ function pieceHandler(payload, socket, pieces, queue) {
 
 function requestPiece(socket, pieces, queue) {
 	if (queue.chocked) return null;
-	while (queue.queue.length) {
-		const pieceIndex = queue.shift();
+	while (queue.length) {
+		const pieceIndex = queue.dequeue();
 		if (pieces.needed(pieceIndex)) {
 			socket.write(buildRequest(pieceIndex));
 			pieces.addRequested(pieceIndex);
