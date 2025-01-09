@@ -2,6 +2,7 @@
 
 import { Buffer } from "buffer";
 import { infoHash } from "./torrent-parser.js";
+import { genId } from "./util.js";
 
 export const buildHandshake = (torrent) => {
 	const buf = Buffer.alloc(68);
@@ -16,7 +17,7 @@ export const buildHandshake = (torrent) => {
 	// info hash
 	infoHash(torrent).copy(buf, 28);
 	// peer id
-	buf.write(genId(), 48);
+	genId().copy(buf, 48);
 	return buf;
 };
 
