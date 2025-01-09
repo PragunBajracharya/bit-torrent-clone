@@ -1,15 +1,21 @@
-'use strict';
+"use strict";
 
-import net from 'net';
-import { Buffer } from 'buffer';
+import net from "net";
 
-const socket = new net.Socket();
-socket.on('error', console.log);
-socket.connect(port, ip, () => {
-    // socket.write(message);
-    socket.write(Buffer.from('hello', 'utf8'));
-});
+import { getPeers } from "./tracker.js";
 
-socket.on('data', (responseBuffer) => {
+export const torrent = () => {
+	getPeers(torrent, (peers) => {
+		peers.forEach(download);
+	});
+};
 
+function download(peer) {
+	const socket = new net.Socket();
+	socket.on("error", console.log);
+	socket.connect(peer.port, peer.ip, () => {
+		// socket.write(message);
+	});
+
+	socket.on("data", (data) => {});
 }
