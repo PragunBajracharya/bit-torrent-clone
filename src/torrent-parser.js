@@ -2,21 +2,23 @@
 
 import fs from "fs";
 import bencode from "bencode";
-import bignum from 'bignum';
+import { Buffer } from "buffer";
+import BigNumber from "bignumber.js";
 
 export const open = (filepath) => {
 	return bencode.decode(fs.readFileSync(filepath));
 };
 
 export const size = (torrent) => {
-    const size = torrent.info.files ?
-        torrent.info.files.map((file) => file.length).reduce((a, b) => a + b) :
-        torrent.info.length;
+	const size = torrent.info.files
+		? torrent.info.files.map((file) => file.length).reduce((a, b) => a + b)
+		: torrent.info.length;
 
-    return bignum.toBuffer(size, { size: 8 });
+	const paddedHex = BigNumber(size).toString(16).padStart(16, "0");
+	return Buffer.from(paddedHex, "hex");
 };
 
 export const infoHash = (torrent) => {
-    const info = bencode.encode(torrent.info);
-    return crypto.createHash("sha1").update(info).digest();
+	const info = bencode.encode(torrent.info);
+	return crypto.createHash("sha1").update(info).digest();
 };

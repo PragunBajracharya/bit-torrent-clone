@@ -9,8 +9,8 @@ import * as util from "./util.js";
 
 export const getPeers = (torrent, callback) => {
 	const socket = dgram.createSocket("udp4");
-	const url = parse(torrent.announce.toString("utf8"));
-
+	const url = parse(Array.from(torrent.announce).map(charCode => String.fromCharCode(charCode)).join(''));
+	
 	// send connection request
 	udpSend(socket, buildConnReq(), url);
 
